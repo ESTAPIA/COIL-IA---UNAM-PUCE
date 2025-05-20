@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Predicción de Diabetes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+    <h1>Formulario de Predicción de Diabetes</h1>
+    <form action="/predecir" method="post">
+        <label>Embarazos:</label><input type="number" name="Embarazos" min="0" required><br>
+
+        <label>Glucosa:</label><input type="number" name="Glucosa" min="0" required><br>
+
+        <label>Presión Arterial:</label><input type="number" name="PresionArterial" min="0" required><br>
+
+        <label>Espesor de piel:</label><input type="number" name="EspesorPiel" min="0" required><br>
+
+        <label>Insulina:</label><input type="number" name="Insulina" min="0" required><br>
+
+        <label>Índice de masa corporal (IMC):</label><input type="number" name="IMC" min="0" step="0.1" required><br>
+
+        <label>Diabetes Pedigree Function:</label><input type="number" name="DiabetesPedigree" step="0.01" required><br>
+
+        <label>Edad:</label><input type="number" name="Edad" min="0" required><br><br>
+
+        <input type="submit" value="Predecir">
+    </form>
+</body>
+</html>

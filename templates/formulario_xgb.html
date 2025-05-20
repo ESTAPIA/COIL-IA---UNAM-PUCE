@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Diabetes - Evaluación de Salud</title>
+    <meta name="description" content="Formulario interactivo y predictivo para evaluar el riesgo de diabetes basado en factores de salud.">
+    <link rel="icon" type="image/png" href="/static/diabetes_icon.png">
+    <style> app
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 20px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        form {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        fieldset {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            padding: 20px;
+        }
+
+        legend {
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .tooltip {
+            border-bottom: 1px dotted #555;
+            cursor: help;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .select-group select, .number-input input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: #fff;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .resultado {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 10px 5px;
+            }
+            fieldset {
+                padding: 10px;
+            }
+            .form-group, .number-input, .select-group {
+                font-size: 15px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Formulario de Evaluación de Diabetes</h2>
+
+    <form method="POST" action="/predecir">
+        <!-- Datos Binarios -->
+        <fieldset>
+            <legend>🔘 Datos Binarios (Sí/No)</legend>
+
+            <!-- Preguntas explicativas para cada campo binario -->
+            <div class="form-group">
+                <label class="tooltip" title="¿Te han diagnosticado presión arterial alta?">
+                    ¿Te han diagnosticado presión arterial alta? (HighBP):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="HighBP" value="1" required> Sí</label>
+                    <label><input type="radio" name="HighBP" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Te han diagnosticado colesterol alto?">
+                    ¿Te han diagnosticado colesterol alto? (HighChol):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="HighChol" value="1" required> Sí</label>
+                    <label><input type="radio" name="HighChol" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Te has realizado un chequeo de colesterol en el último año?">
+                    ¿Te has realizado un chequeo de colesterol en el último año? (CholCheck):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="CholCheck" value="1" required> Sí</label>
+                    <label><input type="radio" name="CholCheck" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Has fumado al menos 100 cigarrillos en tu vida?">
+                    ¿Has fumado al menos 100 cigarrillos en tu vida? (Smoker):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="Smoker" value="1" required> Sí</label>
+                    <label><input type="radio" name="Smoker" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Has sufrido un derrame cerebral?">
+                    ¿Has sufrido un derrame cerebral? (Stroke):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="Stroke" value="1" required> Sí</label>
+                    <label><input type="radio" name="Stroke" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Has tenido un ataque al corazón o enfermedad cardíaca?">
+                    ¿Has tenido un ataque al corazón o enfermedad cardíaca? (HeartDiseaseorAttack):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="HeartDiseaseorAttack" value="1" required> Sí</label>
+                    <label><input type="radio" name="HeartDiseaseorAttack" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Realizas actividad física regularmente?">
+                    ¿Realizas actividad física regularmente? (PhysActivity):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="PhysActivity" value="1" required> Sí</label>
+                    <label><input type="radio" name="PhysActivity" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Consumes frutas al menos una vez al día?">
+                    ¿Consumes frutas al menos una vez al día? (Fruits):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="Fruits" value="1" required> Sí</label>
+                    <label><input type="radio" name="Fruits" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Consumes verduras al menos una vez al día?">
+                    ¿Consumes verduras al menos una vez al día? (Veggies):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="Veggies" value="1" required> Sí</label>
+                    <label><input type="radio" name="Veggies" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Consumes alcohol en exceso (más de 14 bebidas por semana para hombres o más de 7 para mujeres)?">
+                    ¿Consumes alcohol en exceso? (HvyAlcoholConsump):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="HvyAlcoholConsump" value="1" required> Sí</label>
+                    <label><input type="radio" name="HvyAlcoholConsump" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Tienes acceso a algún tipo de atención médica?">
+                    ¿Tienes acceso a algún tipo de atención médica? (AnyHealthcare):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="AnyHealthcare" value="1" required> Sí</label>
+                    <label><input type="radio" name="AnyHealthcare" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Has dejado de ir al médico por no poder costearlo?">
+                    ¿Has dejado de ir al médico por no poder costearlo? (NoDocbcCost):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="NoDocbcCost" value="1" required> Sí</label>
+                    <label><input type="radio" name="NoDocbcCost" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Tienes dificultad para caminar o subir escaleras?">
+                    ¿Tienes dificultad para caminar o subir escaleras? (DiffWalk):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="DiffWalk" value="1" required> Sí</label>
+                    <label><input type="radio" name="DiffWalk" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Eres hombre? (Marca 'No' si eres mujer)">
+                    ¿Eres hombre? (Sex):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="Sex" value="1" required> Sí</label>
+                    <label><input type="radio" name="Sex" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Has tenido 14 o más días de problemas de salud mental en el último mes?">
+                    ¿Has tenido 14 o más días de problemas de salud mental en el último mes? (HighMentHlth):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="HighMentHlth" value="1" required> Sí</label>
+                    <label><input type="radio" name="HighMentHlth" value="0"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="tooltip" title="¿Has tenido 14 o más días de problemas de salud física en el último mes?">
+                    ¿Has tenido 14 o más días de problemas de salud física en el último mes? (HighPhysHlth):
+                </label>
+                <div class="radio-group">
+                    <label><input type="radio" name="HighPhysHlth" value="1" required> Sí</label>
+                    <label><input type="radio" name="HighPhysHlth" value="0"> No</label>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Datos Numéricos -->
+        <fieldset>
+            <legend>📊 Datos Numéricos</legend>
+
+            <div class="form-group number-input">
+                <label class="tooltip" title="Índice de Masa Corporal (ej. 24.5)">
+                    ¿Cuál es tu Índice de Masa Corporal (BMI)?
+                </label>
+                <input type="number" name="BMI" step="0.1" required>
+            </div>
+
+            <div class="form-group number-input">
+                <label class="tooltip" title="¿Cuántos días en el último mes tuviste problemas de salud mental? (0 a 30)">
+                    ¿Cuántos días en el último mes tuviste problemas de salud mental? (MentHlth, 0–30):
+                </label>
+                <input type="number" name="MentHlth" min="0" max="30" required>
+            </div>
+
+            <div class="form-group number-input">
+                <label class="tooltip" title="¿Cuántos días en el último mes tuviste problemas de salud física? (0 a 30)">
+                    ¿Cuántos días en el último mes tuviste problemas de salud física? (PhysHlth, 0–30):
+                </label>
+                <input type="number" name="PhysHlth" min="0" max="30" required>
+            </div>
+        </fieldset>
+
+        <!-- Variables Categóricas -->
+        <fieldset>
+            <legend>📚 Variables Categóricas</legend>
+
+            <div class="form-group select-group">
+                <label class="tooltip" title="¿Cómo calificarías tu salud general?">
+                    ¿Cómo calificarías tu salud general? (GenHlth):
+                </label>
+                <select name="GenHlth" required>
+                    <option value="2">Muy buena</option>
+                    <option value="3">Buena</option>
+                    <option value="4">Regular</option>
+                    <option value="5">Mala</option>
+                </select>
+            </div>
+
+            <div class="form-group select-group">
+                <label class="tooltip" title="Grupo de edad según rangos (e.g. 18-24, 25-29...)">Edad:</label>
+                <select name="Age" required>
+                    <option value="2">18–24</option>
+                    <option value="3">25–29</option>
+                    <option value="4">30–34</option>
+                    <option value="5">35–39</option>
+                    <option value="6">40–44</option>
+                    <option value="7">45–49</option>
+                    <option value="8">50–54</option>
+                    <option value="9">55–59</option>
+                    <option value="10">60–64</option>
+                    <option value="11">65–69</option>
+                    <option value="12">70–74</option>
+                    <option value="13">75+</option>
+                </select>
+            </div>
+
+            <div class="form-group select-group">
+                <label class="tooltip" title="Nivel educativo alcanzado">Educación:</label>
+                <select name="Education" required>
+                    <option value="2">Secundaria incompleta</option>
+                    <option value="3">Secundaria completa</option>
+                    <option value="4">Técnico</option>
+                    <option value="5">Universidad</option>
+                    <option value="6">Postgrado</option>
+                </select>
+            </div>
+
+            <div class="form-group select-group">
+                <label class="tooltip" title="Grupo de ingresos mensuales">Ingreso:</label>
+                <select name="Income" required>
+                    <option value="2">Menos de $1000</option>
+                    <option value="3">$1000–$1999</option>
+                    <option value="4">$2000–$2999</option>
+                    <option value="5">$3000–$3999</option>
+                    <option value="6">$4000–$4999</option>
+                    <option value="7">$5000–$5999</option>
+                    <option value="8">$6000 o más</option>
+                </select>
+            </div>
+        </fieldset>
+
+        <!-- Botón de envío -->
+        <div style="text-align:center;">
+            <button type="submit">🔍 Predecir</button>
+        </div>
+    </form>
+
+    {% if resultado %}
+    <div class="resultado">
+        🧬 <strong>Resultado:</strong> {{ resultado }}
+    </div>
+    {% endif %}
+
+    <script>
+    // Validación extra y confirmación de envío
+    document.querySelector('form').addEventListener('submit', function(e) {
+        // Validación de BMI
+        var bmi = parseFloat(document.querySelector('input[name="BMI"]').value);
+        if (isNaN(bmi) || bmi < 10 || bmi > 60) {
+            alert('Por favor, ingresa un valor de BMI entre 10 y 60.');
+            e.preventDefault();
+            return false;
+        }
+        // Validación de MentHlth y PhysHlth
+        var ment = parseInt(document.querySelector('input[name="MentHlth"]').value);
+        var phys = parseInt(document.querySelector('input[name="PhysHlth"]').value);
+        if (isNaN(ment) || ment < 0 || ment > 30) {
+            alert('Por favor, ingresa un valor de días de salud mental entre 0 y 30.');
+            e.preventDefault();
+            return false;
+        }
+        if (isNaN(phys) || phys < 0 || phys > 30) {
+            alert('Por favor, ingresa un valor de días de salud física entre 0 y 30.');
+            e.preventDefault();
+            return false;
+        }
+        // Confirmación de envío
+        if (!confirm('¿Estás seguro de enviar el formulario?')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Modal para mostrar el resultado
+    window.onload = function() {
+        var resultado = document.querySelector('.resultado');
+        if (resultado) {
+            var modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = '<div class="modal-content"><span class="close">&times;</span>' + resultado.innerHTML + '</div>';
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+            document.querySelector('.close').onclick = function() {
+                modal.style.display = 'none';
+            };
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            };
+            resultado.style.display = 'none';
+        }
+    };
+    </script>
+</body>
+</html>
