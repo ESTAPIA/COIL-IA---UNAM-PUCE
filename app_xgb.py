@@ -52,11 +52,17 @@ def predecir():
         arreglo = np.array(entradas).reshape(1, -1)
         prediccion = modelo.predict(arreglo)[0]
 
-        resultado = "Positivo para Diabetes" if prediccion == 1 else "Negativo para Diabetes"
+        if prediccion == 1:
+            resultado = "⚠️ Riesgo alto de diabetes. Se recomienda visitar a un profesional de salud para una evaluación médica completa."
+        else:
+            resultado = "✅ Riesgo bajo de diabetes. Mantén un estilo de vida saludable y realiza chequeos periódicos."
+
         return render_template("formulario_xgb.html", resultado=resultado)
 
     except Exception as e:
-        return f"Error al procesar la predicción: {e}"
+        error_msg = f"Ocurrió un error al procesar tus datos: {str(e)}"
+        return render_template("formulario_xgb.html", resultado=error_msg)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
