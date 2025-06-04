@@ -1,7 +1,8 @@
 import os
 import joblib
 
-file_path = 'modelo_random_forest_optimizado.pkl'
+# Utilizamos el modelo XGBoost disponible
+file_path = 'modelo_xgboost_optimizado.pkl'
 
 if os.path.exists(file_path):
     print(f"El archivo {file_path} existe.")
